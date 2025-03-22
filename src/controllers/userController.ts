@@ -2,13 +2,13 @@ import { Request, Response } from 'express';
 import { User, Thought} from '../models/index.js';
 
 /**
- * GET All Users /courses
+ * GET All Users /users
  * @returns an array of Users
 */
 export const getAllUsers = async(_req: Request, res: Response) => {
     try {
-        const courses = await User.find();
-        res.json(courses);
+        const users = await User.find();
+        res.json(users);
     } catch(error: any){
         res.status(500).json({
             message: error.message
@@ -24,9 +24,9 @@ export const getAllUsers = async(_req: Request, res: Response) => {
 export const getUserById = async (req: Request, res: Response) => {
     const { courseId } = req.params;
     try {
-      const student = await User.findById(courseId);
-      if(student) {
-        res.json(student);
+      const thought = await User.findById(courseId);
+      if(thought) {
+        res.json(thought);
       } else {
         res.status(404).json({
           message: 'Volunteer not found'
@@ -40,7 +40,7 @@ export const getUserById = async (req: Request, res: Response) => {
   };
 
   /**
- * POST User /courses
+ * POST User /users
  * @param object username
  * @returns a single User object
 */
@@ -59,23 +59,23 @@ export const createUser = async (req: Request, res: Response) => {
   };
 
 /**
- * PUT User based on id /courses/:id
+ * PUT User based on id /users/:id
  * @param object id, username
  * @returns a single User object
 */
 export const updateUser = async (req: Request, res: Response) => {
     try {
-      const course = await User.findOneAndUpdate(
+      const user = await User.findOneAndUpdate(
         { _id: req.params.courseId },
         { $set: req.body },
         { runValidators: true, new: true }
       );
 
-      if (!course) {
-        res.status(404).json({ message: 'No course with this id!' });
+      if (!user) {
+        res.status(404).json({ message: 'No user with this id!' });
       }
 
-      res.json(course)
+      res.json(user)
     } catch (error: any) {
       res.status(400).json({
         message: error.message
@@ -84,21 +84,21 @@ export const updateUser = async (req: Request, res: Response) => {
   };
 
   /**
- * DELETE User based on id /courses/:id
+ * DELETE User based on id /user/:id
  * @param string id
  * @returns string 
 */
 export const deleteUser = async (req: Request, res: Response) => {
     try {
-      const course = await User.findOneAndDelete({ _id: req.params.courseId});
+      const user = await User.findOneAndDelete({ _id: req.params.userId});
       
-      if(!course) {
+      if(!user) {
         res.status(404).json({
           message: 'No course with that ID'
         });
       } else {
-        await Student.deleteMany({ _id: { $in: course.students } });
-        res.json({ message: 'User and students deleted!' });
+        await Thought.deleteMany({ _id: { $in: user.thoughts } });
+        res.json({ message: 'User and thoughts deleted!' });
       }
       
     } catch (error: any) {

@@ -4,14 +4,14 @@ import { Thought, User } from '../models/index.js';
 
 // Aggregate function to get number of thoughts overall
 
-export const headCount = async () => {
+export const thoughtCount = async () => {
     const numberOfThoughts = await Thought.aggregate()
         .count('thoughtCount');
     return numberOfThoughts;
 }
 
 // Aggregate function for getting the thought  using $avg
-export const grade = async (thoughtId: string) =>
+export const thought = async (thoughtId: string) =>
     Thought.aggregate([
         // only include the given thought by using $match
         { $match: { _id: new ObjectId(thoughtId) } },
@@ -21,7 +21,7 @@ export const grade = async (thoughtId: string) =>
         {
             $group: {
                 _id: new ObjectId(thoughtId),
-                overallGrade: { $avg: '$reactions.score' },
+                overallThought: { $avg: '$reactions.score' },
             },
         },
     ]);
@@ -36,7 +36,7 @@ export const getAllThoughts = async (_req: Request, res: Response) => {
 
         const thoughtObj = {
             thoughts,
-            headCount: await headCount(),
+            headCount: await thoughtCount(),
         }
 
         res.json(thoughtObj);
@@ -58,8 +58,7 @@ export const getThoughtById = async (req: Request, res: Response) => {
         const thought = await Thought.findById(thoughtId);
         if (thought) {
             res.json({
-                thought,
-                grade: await grade(thoughtId)
+                thought: await thought(thoughtId)
             });
         } else {
             res.status(404).json({
