@@ -8,22 +8,31 @@ interface IUser extends Document {
     friends: Schema.Types.ObjectId[]
 }
 
-const usernameSchema = new Schema<IUsername>(
+const usernameSchema = new Schema<IUser>(
     {
         name: {
             type: String,
             required: true,
+            unique: true,
+            trim: true,
         },
         email: {
-            type: Boolean,
-            default: true,
+            type: string,
+            required: string, 
+            unique: true,
             match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address'],
         },
         
-        friends: [
+        thoughts: [
             {
                 type: Schema.Types.ObjectId,
-                ref: 'friends',
+                ref: 'Thought',
+            },
+        ],
+        friends: [
+            {
+                types: Schema.Types.ObjectId,
+                ref: 'User',
             },
         ],
     },

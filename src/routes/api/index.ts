@@ -4,7 +4,7 @@ import { thoughtRouter } from './thoughtRoutes.js';
 
 const router = Router();
 
-router.use('/courses', courseRouter);
-router.use('/students', studentRouter);
+router.use('/user', userRouter);
+router.use('/thought', thoughtRouter);
 
 export default router;

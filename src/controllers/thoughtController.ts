@@ -10,7 +10,7 @@ export const headCount = async () => {
     return numberOfThoughts;
 }
 
-// Aggregate function for getting the overall grade using $avg
+// Aggregate function for getting the thought  using $avg
 export const grade = async (thoughtId: string) =>
     Thought.aggregate([
         // only include the given thought by using $match
