@@ -8,7 +8,7 @@ interface IUser extends Document {
     friends: Schema.Types.ObjectId[]
 }
 
-const usernameSchema = new Schema<IUser>(
+const userSchema = new Schema<IUser>(
     {
         name: {
             type: String,
@@ -17,8 +17,8 @@ const usernameSchema = new Schema<IUser>(
             trim: true,
         },
         email: {
-            type: string,
-            required: string, 
+            type: String,
+            required: true, 
             unique: true,
             match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address'],
         },
@@ -44,6 +44,6 @@ const usernameSchema = new Schema<IUser>(
     },
 );
 
-const User = model<IUser>('Course', usernameSchema);
+const User = model<IUser>('Course', userSchema);
 
 export default User;
