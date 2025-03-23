@@ -1,5 +1,6 @@
 import { Schema, Types, type Document } from 'mongoose';
 
+//interface for the Reaction
 interface IReaction extends Document {
     reactionId: Schema.Types.ObjectId,
     reactionBody: string,
@@ -7,7 +8,7 @@ interface IReaction extends Document {
     createdAt: Schema.Types.Date
    }
 
-
+//creating the schema for Reaction
 const reactionSchema = new Schema<IReaction>(
     {
         reactionId: {

@@ -20,7 +20,7 @@ export const thought = async (thoughtId: string) =>
         },
         {
             $group: {
-                _id: new ObjectId(thoughtId), totalReactions: { $sum: 1}
+                _id: new ObjectId(thoughtId), totalReactions: { $sum: 1 }
             },
         },
     ]);
@@ -35,7 +35,7 @@ export const getAllThoughts = async (_req: Request, res: Response) => {
 
         const thoughtObj = {
             thoughtText,
-            thoughtCount: await thoughtCount(),
+            totalReactions: await totalReactions(),
         }
 
         res.json(thoughtObj);

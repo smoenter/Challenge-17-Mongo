@@ -24,7 +24,7 @@ export const getAllUsers = async(_req: Request, res: Response) => {
 export const getUserById = async (req: Request, res: Response) => {
     const { userId } = req.params;
     try {
-      const thought = await User.findById(userId);
+      const thought = await User.findById(userId).populate({ path: 'Thought', select: '-_v'} );
       if(thought) {
         res.json(thought);
       } else {
