@@ -2,12 +2,12 @@ import { Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
 import { Thought, User } from '../models/index.js';
 
-// Aggregate function to get number of thoughts overall
+// Aggregate function to get number of overall reactions 
 
-export const thoughtCount = async () => {
-    const numberOfThoughts = await Thought.aggregate()
-        .count('thoughtCount');
-    return numberOfThoughts;
+export const totalReactions = async () => {
+    const numberOfReactions = await Thought.aggregate()
+        .count('totalReactions');
+    return numberOfReactions;
 }
 
 // Aggregate function for getting the thought 
@@ -31,10 +31,10 @@ export const thought = async (thoughtId: string) =>
 */
 export const getAllThoughts = async (_req: Request, res: Response) => {
     try {
-        const thoughts = await Thought.find();
+        const thoughtText = await Thought.find();
 
         const thoughtObj = {
-            thoughts,
+            thoughtText,
             thoughtCount: await thoughtCount(),
         }
 
