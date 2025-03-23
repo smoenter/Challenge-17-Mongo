@@ -31,7 +31,7 @@ const userSchema = new Schema<IUser>(
         ],
         friends: [
             {
-                types: Schema.Types.ObjectId,
+                type: Schema.Types.ObjectId,
                 ref: 'User',
             },
         ],
@@ -44,6 +44,6 @@ const userSchema = new Schema<IUser>(
     },
 );
 
-const User = model<IUser>('User', userSchema);
+const User = model('User', userSchema);
 
 export default User;
