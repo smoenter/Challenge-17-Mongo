@@ -35,7 +35,7 @@ export const getAllThoughts = async (_req: Request, res: Response) => {
 
         const thoughtObj = {
             thoughts,
-            headCount: await thoughtCount(),
+            thoughtCount: await thoughtCount(),
         }
 
         res.json(thoughtObj);
