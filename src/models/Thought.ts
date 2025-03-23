@@ -1,5 +1,5 @@
 import { Schema, model, type Document } from 'mongoose';
-import reactionSchema from './Reaction';
+import reactionSchema from './Reaction.js';
 
 
 
@@ -24,7 +24,7 @@ const thoughtSchema = new Schema<IThought>(
             get: (timestamp: Date) => timestamp.toISOString(),
         },
         username: {
-            name: String,
+            type: String,
             required: true,
         },
         reactions: [reactionSchema]
