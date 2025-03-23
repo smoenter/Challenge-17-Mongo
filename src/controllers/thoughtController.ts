@@ -10,7 +10,7 @@ export const thoughtCount = async () => {
     return numberOfThoughts;
 }
 
-// Aggregate function for getting the thought  using $avg
+// Aggregate function for getting the thought 
 export const thought = async (thoughtId: string) =>
     Thought.aggregate([
         // only include the given thought by using $match
@@ -20,8 +20,7 @@ export const thought = async (thoughtId: string) =>
         },
         {
             $group: {
-                _id: new ObjectId(thoughtId),
-                overallThought: { $avg: '$reactions.score' },
+                _id: new ObjectId(thoughtId), totalReactions: { $sum: 1}
             },
         },
     ]);
@@ -55,8 +54,8 @@ export const getAllThoughts = async (_req: Request, res: Response) => {
 export const getThoughtById = async (req: Request, res: Response) => {
     const { thoughtId } = req.params;
     try {
-        const thought = await Thought.findById(thoughtId);
-        if (thought) {
+        const foundThought = await Thought.findById(thoughtId);
+        if (foundThought) {
             res.json({
                 thought: await thought(thoughtId)
             });
@@ -139,7 +138,7 @@ export const addReaction = async (req: Request, res: Response) => {
         if (!thought) {
             return res
                 .status(404)
-                .json({ message: 'No thought found with that ID :(' });
+                .json({ message: "Missing required fields (text, userId)" });
         }
 
         return res.json(thought);

@@ -17,19 +17,19 @@ export const getAllUsers = async(_req: Request, res: Response) => {
 }
 
 /**
- * GET User based on id /course/:id
+ * GET User based on id /user/:id
  * @param string id
  * @returns a single User object
 */
 export const getUserById = async (req: Request, res: Response) => {
-    const { courseId } = req.params;
+    const { userId } = req.params;
     try {
-      const thought = await User.findById(courseId);
+      const thought = await User.findById(userId);
       if(thought) {
         res.json(thought);
       } else {
         res.status(404).json({
-          message: 'Volunteer not found'
+          message: 'Thought not found'
         });
       }
     } catch (error: any) {
@@ -45,10 +45,10 @@ export const getUserById = async (req: Request, res: Response) => {
  * @returns a single User object
 */
 export const createUser = async (req: Request, res: Response) => {
-    const { course } = req.body;
+    const { user } = req.body;
     try {
       const newUser = await User.create({
-        course
+        user
       });
       res.status(201).json(newUser);
     } catch (error: any) {
@@ -66,7 +66,7 @@ export const createUser = async (req: Request, res: Response) => {
 export const updateUser = async (req: Request, res: Response) => {
     try {
       const user = await User.findOneAndUpdate(
-        { _id: req.params.courseId },
+        { _id: req.params.userId },
         { $set: req.body },
         { runValidators: true, new: true }
       );
@@ -94,7 +94,7 @@ export const deleteUser = async (req: Request, res: Response) => {
       
       if(!user) {
         res.status(404).json({
-          message: 'No course with that ID'
+          message: 'No user with that ID'
         });
       } else {
         await Thought.deleteMany({ _id: { $in: user.thoughts } });

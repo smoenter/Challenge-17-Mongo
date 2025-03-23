@@ -1,4 +1,5 @@
-import { Schema, Types, model, type Document } from 'mongoose';
+import { Schema, model, type Document } from 'mongoose';
+import reactionSchema from './Reaction';
 
 
 
@@ -6,28 +7,27 @@ interface IThought extends Document {
     thoughtText: string,
     username: string,
     createdAt: Schema.Types.Date,
-    reaction: [reactionSchema]
+    reactions: [typeof reactionSchema]
 }
 
-const thoughtSchema = new Schema<IReaction>(
+const thoughtSchema = new Schema<IThought>(
     {
         thoughtText: {
             type: String,
             required: true,
-            maxlength: 280,
             minlength: 1,
+            maxlength: 280,
         },
         createdAt: {
             type: Date,
             default: Date.now,
-            get: (timestamp: any) => dateFormat(timestamp)
+            get: (timestamp: Date) => timestamp.toISOString(),
         },
         username: {
             name: String,
             required: true,
         },
-    reaction: [reactionSchema]
-
+        reactions: [reactionSchema]
     },
     {
         toJSON: {
