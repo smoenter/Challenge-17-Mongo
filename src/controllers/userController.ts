@@ -7,7 +7,8 @@ import { User, Thought} from '../models/index.js';
 */
 export const getAllUsers = async(_req: Request, res: Response) => {
     try {
-        const users = await User.find();
+        const users = await User.find()
+        .populate('thoughts').populate('friends');
         res.json(users);
     } catch(error: any){
         res.status(500).json({
@@ -24,12 +25,13 @@ export const getAllUsers = async(_req: Request, res: Response) => {
 export const getUserById = async (req: Request, res: Response) => {
     const { userId } = req.params;
     try {
-      const thought = await User.findById(userId).populate({ path: 'Thought', select: '-_v'} );
+      const thought = await User.findById(userId)
+      .populate('thoughts').populate('friends');
       if(thought) {
         res.json(thought);
       } else {
         res.status(404).json({
-          message: 'Thought not found'
+          message: 'User not found'
         });
       }
     } catch (error: any) {
@@ -45,10 +47,10 @@ export const getUserById = async (req: Request, res: Response) => {
  * @returns a single User object
 */
 export const createUser = async (req: Request, res: Response) => {
-    const { user } = req.body;
+    const { name, email } = req.body;
     try {
       const newUser = await User.create({
-        user
+        name, email
       });
       res.status(201).json(newUser);
     } catch (error: any) {

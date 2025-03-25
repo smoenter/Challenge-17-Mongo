@@ -34,7 +34,7 @@ const thoughtSchema = new Schema<IThought>(
             getters: true,
         },
         timestamps: true,
-        _id: false
+        id: false
     }
 );
 

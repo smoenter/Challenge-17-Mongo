@@ -40,6 +40,7 @@ export const getAllThoughts = async (_req: Request, res: Response) => {
 
         res.json(thoughtObj);
     } catch (error: any) {
+        console.error(error)
         res.status(500).json({
             message: error.message
         });
@@ -79,9 +80,16 @@ export const getThoughtById = async (req: Request, res: Response) => {
 
 export const createThought = async (req: Request, res: Response) => {
     try {
-        const thought = await Thought.create(req.body);
+        const { thoughtText, username, userId } = req.body;
+        const thought = await Thought.create({ thoughtText, username });
+        await User.findOneAndUpdate(
+            { _id: userId },
+            { $push: { thoughts: thought._id } },
+            { new: true }
+        );
         res.json(thought);
     } catch (err) {
+        console.error(err)
         res.status(500).json(err);
     }
 }
