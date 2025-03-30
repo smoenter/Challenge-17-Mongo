@@ -81,22 +81,57 @@ export const getThoughtById = async (req: Request, res: Response) => {
 export const createThought = async (req: Request, res: Response) => {
     try {
         const { thoughtText, username, userId } = req.body;
+        // Check if the user exists
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        // Add the thought to the user's thoughts array
         const thought = await Thought.create({ thoughtText, username });
         await User.findOneAndUpdate(
             { _id: userId },
             { $push: { thoughts: thought._id } },
             { new: true }
         );
-        res.json(thought);
+        return res.json(thought);
     } catch (err) {
         console.error(err)
-        res.status(500).json(err);
+        return res.status(500).json(err);
     }
 }
+
 /**
- * DELETE Thought based on id /thoughts/:id
- * @param string id
- * @returns string 
+ * PUT User based on id /thought/:id
+ * @param object id, thought
+ * @returns a single thought
+*/
+export const updateThought = async (req: Request, res: Response) => {
+    try {
+        const thought = await Thought.findOneAndUpdate(
+            { _id: req.params.thoughtId },
+            { $set: req.body },
+            { runValidators: true, new: true }
+        );
+
+        if (!thought) {
+            return res.status(404).json({ message: 'No thought with this id!' });
+        }
+
+        return res.json(thought)
+    } catch (error: any) {
+        console.error(error);
+        return res.status(400).json({
+            message: error.message
+        });
+    }
+};
+
+/**
+
+/**
+* DELETE Thought based on id /thoughts/:id
+* @param string id
+* @returns string 
 */
 
 export const deleteThought = async (req: Request, res: Response) => {
@@ -127,33 +162,49 @@ export const deleteThought = async (req: Request, res: Response) => {
 }
 
 /**
- * POST Reaction based on /thoughts/:thoughtId/reactions
+ * POST Reaction based on /thought/:thoughtId/reactions
  * @param string id
  * @param object reaction
  * @returns object thought 
 */
 
 export const addReaction = async (req: Request, res: Response) => {
-    console.log('You are adding an reaction');
-    console.log(req.body);
+    console.log('Adding reaction');
+    
     try {
+        const { reactionBody, username } = req.body;  // Ensure these fields are passed in the body
+
+        // Validate if reactionBody and username are provided
+        if (!reactionBody || !username) {
+            return res.status(400).json({ message: 'Reaction body and username are required.' });
+        }
+
+        // Create a new reaction object with required fields
+        const newReaction = {
+            reactionBody,
+            username,
+            createdAt: new Date()  // or use a default in your schema if necessary
+        };
+
+        // Find the thought by its ID and add the new reaction to the reactions array
         const thought = await Thought.findOneAndUpdate(
             { _id: req.params.thoughtId },
-            { $addToSet: { reactions: req.body } },
-            { runValidators: true, new: true }
+            { $addToSet: { reactions: newReaction } },  // $addToSet prevents duplicate reactions
+            { runValidators: true, new: true }  // Ensures that the updated thought is returned
         );
 
         if (!thought) {
-            return res
-                .status(404)
-                .json({ message: "Missing required fields (text, userId)" });
+            return res.status(404).json({ message: 'Thought not found' });
         }
 
-        return res.json(thought);
+        return res.status(201).json(thought);  // Successfully return the updated thought with the new reaction
+
     } catch (err) {
-        return res.status(500).json(err);
+        console.error(err);
+        return res.status(500).json({ message: 'Server error', error: err });
     }
-}
+};
+
 
 /**
  * DELETE Reaction based on /thoughts/:thoughtId/reactions
@@ -164,10 +215,11 @@ export const addReaction = async (req: Request, res: Response) => {
 
 export const removeReaction = async (req: Request, res: Response) => {
     try {
+        // Find the thought by its ID and pull the reaction by its reactionId
         const thought = await Thought.findOneAndUpdate(
-            { _id: req.params.thoughtId },
-            { $pull: { reactions: { reactionId: req.params.reactionId } } },
-            { runValidators: true, new: true }
+            { _id: req.params.thoughtId }, // Match thought by its ID
+            { $pull: { reactions: { _id: req.params.reactionId } } }, // Match reaction by reactionId (_id field in each reaction)
+            { runValidators: true, new: true } // Return the updated thought with reactions removed
         );
 
         if (!thought) {
@@ -176,8 +228,9 @@ export const removeReaction = async (req: Request, res: Response) => {
                 .json({ message: 'No thought found with that ID :(' });
         }
 
-        return res.json(thought);
+        return res.json(thought); // Return the updated thought with reactions removed
     } catch (err) {
-        return res.status(500).json(err);
+        console.error(err);
+        return res.status(500).json({ message: 'Server error', error: err });
     }
-}
+};
